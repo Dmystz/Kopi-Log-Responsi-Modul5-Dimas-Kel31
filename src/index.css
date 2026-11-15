@@ -57,3 +57,5 @@ main{flex:1}
 .rate{color:#b07d0e;letter-spacing:1px;background:transparent;padding:0}
 .rate small{color:var(--muted);letter-spacing:0;font-weight:600}
 .kopi .row{margin-top:10px}
+.profil-form{max-width:560px}
+.btn:disabled{opacity:.6;cursor:wait}

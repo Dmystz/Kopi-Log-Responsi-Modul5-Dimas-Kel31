@@ -58,3 +58,32 @@ export async function removeEntry(id) {
   if (http) await http.delete('/kopi', { params: { id: `eq.${id}` } })
   write(read().filter((x) => x.id !== id))
 }
+
+// ---------- PROFIL (satu baris, id = 1) ----------
+const PKEY = 'kopi-log:profil'
+const profilAwal = { nama: 'Nama Lengkap Kamu', nim: '00000000000', kelompok: 'Kelompok X' }
+const bacaProfil = () => { try { return { ...profilAwal, ...JSON.parse(localStorage.getItem(PKEY)) } } catch { return profilAwal } }
+const tulisProfil = (d) => { try { localStorage.setItem(PKEY, JSON.stringify(d)) } catch {} }
+const ambilProfil = (d) => ({ nama: d.nama, nim: d.nim, kelompok: d.kelompok })
+
+export async function getProfil() {
+  if (!http) return bacaProfil()
+  try {
+    const { data } = await http.get('/profil', { params: { select: '*', id: 'eq.1' } })
+    if (data.length) { const p = ambilProfil(data[0]); tulisProfil(p); return p }
+    return bacaProfil()
+  } catch {
+    return bacaProfil()
+  }
+}
+
+export async function saveProfil(d) {
+  const p = ambilProfil(d)
+  if (http) {
+    await http.post('/profil', { id: 1, ...p }, {
+      headers: { Prefer: 'resolution=merge-duplicates,return=representation' }
+    })
+  }
+  tulisProfil(p)
+  return p
+}
